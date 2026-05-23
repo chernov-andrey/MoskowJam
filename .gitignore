@@ -73,3 +73,11 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+/Wild_Minnow/Intermediate
+/Wild_Minnow/Saved
+
+/Wild_Minnow/Binaries/Win64/*.pdb
+/Wild_Minnow/Binaries/Win64/Wild_Minnow-Win64-Shipping.target
+/Wild_Minnow/Build/Windows/FileOpenOrder/*.log
+/Wild_Minnow/Binaries/Win64/*.exp
+/Wild_Minnow/Binaries/Win64/*.target
