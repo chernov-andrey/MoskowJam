@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-MoskowJam.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"N:\Jams\MoskowJam\MoskowJam\Intermediate\Build\Win64\x64\MoskowJamEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"N:\Jams\MoskowJam\MoskowJam\Intermediate\Build\Win64\x64\UnrealEditor\Development\MoskowJam\MoskowJam.cpp.obj"
+"N:\Jams\MoskowJam\MoskowJam\Intermediate\Build\Win64\x64\UnrealEditor\Development\MoskowJam\Default.rc2.res"
+/OUT:"N:\Jams\MoskowJam\MoskowJam\Intermediate\Build\Win64\x64\UnrealEditor\Development\MoskowJam\UnrealEditor-MoskowJam.lib"

@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"N:\\Jams\\MoskowJam\\MoskowJam\\Source\\MoskowJam\\MoskowJam.Build.cs",
+		"N:\\Jams\\MoskowJam\\MoskowJam\\Source\\MoskowJam.Target.cs",
+		"N:\\Jams\\MoskowJam\\MoskowJam\\Source\\MoskowJamEditor.Target.cs"
+	],
+	"EngineVersion": "5.4.4"
+}

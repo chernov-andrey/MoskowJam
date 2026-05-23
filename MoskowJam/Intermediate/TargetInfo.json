@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "MoskowJam",
+			"Path": "..\\Source\\MoskowJam.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "MoskowJamEditor",
+			"Path": "..\\Source\\MoskowJamEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
