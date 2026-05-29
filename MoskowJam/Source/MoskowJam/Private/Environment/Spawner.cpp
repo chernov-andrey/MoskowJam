@@ -6,6 +6,8 @@
 #include "Environment/Barrier.h"
 #include "MoskowJam\MoskowJam_Directives.h"
 #include "Kismet\KismetSystemLibrary.h"
+#include "Components/BoxComponent.h"
+
 
 // Sets default values
 ASpawner::ASpawner()
@@ -13,13 +15,71 @@ ASpawner::ASpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+    DeadZone_BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+    check(DeadZone_BoxComponent);
 }
+
 
 // Called when the game starts or when spawned
 void ASpawner::BeginPlay()
 {
+    PointForUpdateMap= Spawn_PointForUpdate();
+    DeadZone_BoxComponent->SetBoxExtent(Size_DeadZone_BoxComponent,false);
+    DeadZone_BoxComponent->SetWorldLocation(UMBFL_Submarine::GetLocationSubmarine(this) + Offset_DeadZone_BoxComponent);
+    DeadZone_BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ASpawner::OnTriggered_DeadZone);
+
 	Super::BeginPlay();
 	StartedFilling();
+}
+
+void ASpawner::OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (ABarrier* OtherBarrier{ Cast<ABarrier>(OtherActor) })
+    {
+        if (PointForUpdateMap == OtherBarrier)
+        {
+            PointForUpdateMap = Spawn_PointForUpdate();
+            for (int j{ 0 }; j < CountCol;j++)
+            {
+                FillingChank(j, 5);
+            }
+        }
+        
+        OtherActor->Destroy();
+    }
+}
+
+ABarrier* ASpawner::Spawn_PointForUpdate()
+{
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;           // Укажите владельца (опционально)
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+    FVector Location{ UMBFL_Submarine::GetLocationSubmarine(this) + Offset_DeadZone_BoxComponent + FVector::ForwardVector * SizeChank };
+ 
+    ABarrier* NewActor= GetWorld()->SpawnActor<ABarrier>(
+        ABarrier::StaticClass(),
+        Location,
+        FRotator{},
+        SpawnParams
+    );
+
+    if (NewActor)
+    {
+    
+        UBoxComponent* BoxForBarrier = NewObject<UBoxComponent>(NewActor, UBoxComponent::StaticClass(), TEXT("BoxComponent"));
+        if (BoxForBarrier)
+        {
+            BoxForBarrier->SetupAttachment(NewActor->GetRootComponent()); // Прикрепление к корневому компоненту
+            BoxForBarrier->RegisterComponent(); // Регистрация компонента в движке
+            BoxForBarrier->SetCollisionObjectType(ECC_GameTraceChannel7);
+          
+        }
+
+
+        return NewActor;
+    }
+    return nullptr;
 }
 
 // Called every frame

@@ -7,7 +7,7 @@
 #include "Spawner.generated.h"
 
 class ABarrier;
-
+class UBoxComponent;
 USTRUCT(BlueprintType)
 struct FSpawnSettings
 {
@@ -71,16 +71,33 @@ class MOSKOWJAM_API ASpawner : public AActor
 	
 private:
 	FRotator LastRotation;
+	TObjectPtr<ABarrier> PointForUpdateMap;
+
+	ABarrier* Spawn_PointForUpdate();
 
 public:	
 	// Sets default values for this actor's properties
 	ASpawner();
 
 protected:
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Spawner | DeadZone")
+	TObjectPtr<UBoxComponent> DeadZone_BoxComponent;
+	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner | DeadZone")
+	FVector Size_DeadZone_BoxComponent;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner | DeadZone")
+	FVector Offset_DeadZone_BoxComponent;
+	
+	UFUNCTION()
+	void OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	// размер одного чанка
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = Spawner)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner | SpawnSettings")
 	float SizeChank;
 
 	int CountCol = 3;
@@ -89,7 +106,7 @@ protected:
 
 
 	//список акторов и их параметры спавна в чанке
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawner)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner | SpawnSettings")
 	TArray<FSpawnSettings> List_SettingsForSpawn;
 
 
