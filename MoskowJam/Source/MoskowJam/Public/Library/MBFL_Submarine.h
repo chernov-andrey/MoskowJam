@@ -18,5 +18,8 @@ class MOSKOWJAM_API UMBFL_Submarine : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintPure)
 	static ASubmarine* GetSubmarine(AActor* Actor);
+	
+	UFUNCTION(BlueprintPure)
+	static FVector GetLocationSubmarine(AActor* Actor);
 
 };

@@ -3,6 +3,7 @@
 
 #include "Submarine.h"
 #include "Components/ArrowComponent.h"
+#include "MoskowJam\MoskowJam_Directives.h"
 
 // Sets default values
 ASubmarine::ASubmarine()
@@ -52,5 +53,37 @@ void ASubmarine::Change_CurrentRotation(FRotator Delta_Rotation)
 	ArrowComponent->AddLocalRotation(Delta_Rotation);
 	CurrentRotation = ArrowComponent->GetComponentRotation();
 	OnChangedCurrentRotationEvent.Broadcast(CurrentRotation);
+}
+
+void ASubmarine::Set_CurrentRotation(FRotator New_Rotation)
+{
+	ArrowComponent->SetWorldRotation(New_Rotation);
+	CurrentRotation = ArrowComponent->GetComponentRotation();
+	OnChangedCurrentRotationEvent.Broadcast(CurrentRotation);
+}
+
+
+
+void ASubmarine::StartManeuver_Dodge(EDirDodge Dir)
+{
+	if (IsPerformsManeuver()) 
+	{
+		return;
+	}
+
+	bPerformsManeuver = true;
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ManeuverDodge, this, &ThisClass::StopManeuver_Dodge, Duration_Dodge, false);
+	
+	Set_CurrentRotation((Dir == EDirDodge::Left) ? FRotator{ 0,MaxAngleRotation_Dodge,0 } : FRotator{ 0,-MaxAngleRotation_Dodge,0 });
+
+
+}
+
+void ASubmarine::StopManeuver_Dodge()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ManeuverDodge);
+	Set_CurrentRotation(FRotator{});
+	bPerformsManeuver = false;
 }
 

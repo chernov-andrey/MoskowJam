@@ -8,11 +8,19 @@
 
 class UArrowComponent;
 
+UENUM(BlueprintType)
+enum EDirDodge : int
+{
+	Left,
+	Right
+};
+
 UCLASS()
 class MOSKOWJAM_API ASubmarine : public AActor
 {
 	GENERATED_BODY()
 	
+
 public:	
 	// Sets default values for this actor's properties
 	ASubmarine();
@@ -46,6 +54,20 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Submarine)
 	float  MoodOfTheTeam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
+	float  Duration_Dodge;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
+	float  TimeRate_Dodge;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
+	float  MaxAngleRotation_Dodge;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
+	float  ElapsedTime_Dodge{0};
+
+	FTimerHandle TimerHandle_ManeuverDodge;
 
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -83,4 +105,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Submarine)
 	void Change_CurrentRotation(FRotator Delta_Rotation);
 
+
+	UFUNCTION(BlueprintCallable, Category = Submarine)
+	void Set_CurrentRotation(FRotator New_Rotation);
+
+
+	UFUNCTION(BlueprintCallable, Category = Submarine)
+	void StartManeuver_Dodge(EDirDodge Direction);
+
+	void StopManeuver_Dodge();
+
+	UFUNCTION(BlueprintCallable, Category = Submarine)
+	bool IsPerformsManeuver() { return bPerformsManeuver; };
+
+private:
+	bool bPerformsManeuver;
 };
