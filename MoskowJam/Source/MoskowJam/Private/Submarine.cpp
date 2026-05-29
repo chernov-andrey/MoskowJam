@@ -75,8 +75,7 @@ void ASubmarine::StartManeuver_Dodge(EDirDodge Dir)
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ManeuverDodge, this, &ThisClass::StopManeuver_Dodge, Duration_Dodge, false);
 	
-	Set_CurrentRotation((Dir == EDirDodge::Left) ? FRotator{ 0,MaxAngleRotation_Dodge,0 } : FRotator{ 0,-MaxAngleRotation_Dodge,0 });
-
+	Set_CurrentRotation((Dir == EDirDodge::Left) ? FRotator{ 0,-MaxAngleRotation_Dodge,0 } : FRotator{ 0,MaxAngleRotation_Dodge,0 });
 
 }
 
