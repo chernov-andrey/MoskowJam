@@ -100,6 +100,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner | SpawnSettings")
 	float SizeChank;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner | SpawnSettings")
+	int GenerationDepth_Chank{3};
+
+
 	int CountCol = 3;
 	int CountRow = 3;
 

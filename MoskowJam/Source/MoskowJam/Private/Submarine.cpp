@@ -2,8 +2,12 @@
 
 
 #include "Submarine.h"
+#include "Kismet\GameplayStatics.h"
 #include "Components/ArrowComponent.h"
+#include "Components\SphereComponent.h"
 #include "MoskowJam\MoskowJam_Directives.h"
+
+#include "Environment/Barrier.h"
 
 // Sets default values
 ASubmarine::ASubmarine()
@@ -14,15 +18,33 @@ ASubmarine::ASubmarine()
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	check(ArrowComponent);
 
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	check(SphereComponent);
+
+	RootComponent = SphereComponent;
+	ArrowComponent->SetupAttachment(SphereComponent);
+
+	SphereComponent->SetCollisionObjectType(ECC_Vehicle);
+
 	CurrentHealthPoint = Get_Max_HP();
 	CurrentRotation = ArrowComponent->GetComponentRotation();
+}
+
+void ASubmarine::OnBeginOverlapp_SphereComponent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (auto InActor = Cast<ABarrier>(OtherActor))
+	{
+		DrawDebugString(GetWorld(), SweepResult.Location,"RAM", GetWorld()->GetFirstPlayerController(),FColor::Red,10.0f, false,5);
+	
+	}
 }
 
 // Called when the game starts or when spawned
 void ASubmarine::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this,&ASubmarine::OnBeginOverlapp_SphereComponent);
+
 }
 
 // Called every frame
@@ -40,6 +62,8 @@ void ASubmarine::Change_HP(float Delta_HP)
 
 void ASubmarine::Change_MoodOfTheTeam()
 {
+	
+
 }
 
 void ASubmarine::Change_CurrentSpeed(float Delta_Speed)

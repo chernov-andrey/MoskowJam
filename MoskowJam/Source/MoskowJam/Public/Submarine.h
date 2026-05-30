@@ -7,6 +7,8 @@
 #include "Submarine.generated.h"
 
 class UArrowComponent;
+class USphereComponent;
+class ABarrier;
 
 UENUM(BlueprintType)
 enum EDirDodge : int
@@ -36,23 +38,35 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnChangedCurrentRotation OnChangedCurrentRotationEvent;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TObjectPtr<USphereComponent> SphereComponent;
+
+	UFUNCTION()
+	void OnBeginOverlapp_SphereComponent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "Submarine")
+	TSubclassOf<ABarrier> Class_RAM;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
+	FVector VectorLoc;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = Submarine)
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Submarine")
 	float CurrentSpeed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Submarine)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine")
 	FRotator CurrentRotation;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Submarine)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine")
 	float CurrentHealthPoint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Submarine)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
 	float Max_HealthPoint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Submarine)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine")
 	float  MoodOfTheTeam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
@@ -77,45 +91,45 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintPure, Category = Submarine)
+	UFUNCTION(BlueprintPure, Category = "Submarine")
 	float GetMoodOfTheTeam()const { return MoodOfTheTeam; };
 
-	UFUNCTION(BlueprintPure, Category = Submarine)
+	UFUNCTION(BlueprintPure, Category = "Submarine")
 	float Get_CurrentHP()const { return CurrentHealthPoint; };
 
-	UFUNCTION(BlueprintPure, Category = Submarine)
+	UFUNCTION(BlueprintPure, Category = "Submarine")
 	float Get_Max_HP()const { return CurrentHealthPoint; };
 
-	UFUNCTION(BlueprintPure, Category = Submarine)
+	UFUNCTION(BlueprintPure, Category = "Submarine")
 	float Get_CurrentSpeed()const { return CurrentSpeed; };
 
-	UFUNCTION(BlueprintPure, Category = Submarine)
+	UFUNCTION(BlueprintPure, Category = "Submarine")
 	FRotator Get_CurrentRotation()const { return CurrentRotation; };
 
 	
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Change_HP(float Delta_HP);
 	
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Change_MoodOfTheTeam();
 
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Change_CurrentSpeed(float Delta_Speed);
 
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Change_CurrentRotation(FRotator Delta_Rotation);
 
 
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Set_CurrentRotation(FRotator New_Rotation);
 
 
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void StartManeuver_Dodge(EDirDodge Direction);
 
 	void StopManeuver_Dodge();
 
-	UFUNCTION(BlueprintCallable, Category = Submarine)
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	bool IsPerformsManeuver() { return bPerformsManeuver; };
 
 private:

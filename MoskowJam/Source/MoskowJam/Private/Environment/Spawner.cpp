@@ -41,7 +41,7 @@ void ASpawner::OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AA
             PointForUpdateMap = Spawn_PointForUpdate();
             for (int j{ 0 }; j < CountCol;j++)
             {
-                FillingChank(j, 5);
+                FillingChank(j, GenerationDepth_Chank);
             }
         }
         
@@ -115,7 +115,7 @@ FVector ASpawner::GetRandomLocationBefore_Submarine(int Col, int Row)
 
 void ASpawner::StartedFilling()
 { 
-    for (int i{ 0 }; i < CountRow * 2;i++)
+    for (int i{ 0 }; i < GenerationDepth_Chank;i++)
     {
         for (int j{ 0 }; j < CountCol;j++)
         {
