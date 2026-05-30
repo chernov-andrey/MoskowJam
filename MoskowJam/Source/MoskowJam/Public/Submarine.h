@@ -44,8 +44,6 @@ public:
 	UFUNCTION()
 	void OnBeginOverlapp_SphereComponent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "Submarine")
-	TSubclassOf<ABarrier> Class_RAM;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
 	FVector VectorLoc;
@@ -65,6 +63,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
 	float Max_HealthPoint;
+	
+	
+	// RAM
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "Submarine")
+	TSubclassOf<ABarrier> Class_RAM;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
+	float Damage_RAM{10.f};
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine")
 	float  MoodOfTheTeam;
@@ -123,6 +130,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Set_CurrentRotation(FRotator New_Rotation);
 
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
+	void Set_CurrentSpeed(float New_Speed);
 
 	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void StartManeuver_Dodge(EDirDodge Direction);

@@ -30,6 +30,7 @@ void ASpawner::BeginPlay()
 
 	Super::BeginPlay();
 	StartedFilling();
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle_LifeSpanExpired, this, &ASpawner::SpawnRandomTrap, Delay_Befor_FirstSpawn_Trap, false);
 }
 
 void ASpawner::OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -113,6 +114,46 @@ FVector ASpawner::GetRandomLocationBefore_Submarine(int Col, int Row)
     return StartPoint + OffsetRows + RandomForwardInChank + RandomRightInChank;
 }
 
+TArray<int> ASpawner::GetArray_Weights_SpawnTrap()
+{
+    TArray<int> LArray;
+    
+    for (const auto& Settings : List_Settings_ForSpawnTrap)
+    {
+        LArray.Add(Settings.WeightForSelect);
+    }
+    return LArray;
+}
+
+int ASpawner::GetRandom_ArrayIndex_UseWeight(const TArray<int>& Weights)
+{   
+    if (Weights.IsEmpty())
+    {
+        return -1;
+    }
+
+    int Size{ Weights.Num() };
+    int SummWeights{0};
+
+    for (auto x : Weights)
+    {
+        SummWeights += x;
+    }
+
+    int Random{FMath::RandRange(1,SummWeights)};
+    for (int i = 0; i < Size; i++)
+    {
+        if (Random <= Weights[i])
+        {
+            return i;
+        }
+        Random -= Weights[i];
+
+    }
+
+    return -1;
+}
+
 void ASpawner::StartedFilling()
 { 
     for (int i{ 0 }; i < GenerationDepth_Chank;i++)
@@ -122,6 +163,56 @@ void ASpawner::StartedFilling()
             FillingChank(j,i);
         }
     }
+}
+
+void ASpawner::SpawnRandomTrap()
+{
+    GetWorld()->GetTimerManager().ClearTimer(TimerHandle_LifeSpanExpired);
+    
+
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;           // Укажите владельца (опционально)
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  
+    static int IterSpawn{0};
+    
+    FSpawnSettingsTraps* SettingsTrap;
+    if (Sequence_SpawnTrap.IsValidIndex(IterSpawn))
+    {
+        SettingsTrap = &List_Settings_ForSpawnTrap[IterSpawn];
+        IterSpawn++;
+    }
+    else 
+    {
+        SettingsTrap = &List_Settings_ForSpawnTrap[GetRandom_ArrayIndex_UseWeight(GetArray_Weights_SpawnTrap())];
+    }
+    
+    FTransform SpawnTransform;
+   // SpawnTransform.SetRotation(GetPseudoRandomRotation().Quaternion());
+   
+    const FVector& Min{ SettingsTrap->MinRandomOffsetSpawn };
+    const FVector& Max{ SettingsTrap->MaxRandomOffsetSpawn };
+
+    FVector Location{ FMath::RandRange(Min.X,Max.X),FMath::RandRange(Min.Y,Max.Y),FMath::RandRange(Min.Z,Max.Z) };
+    
+    SpawnTransform.SetLocation(Location);
+
+
+    if (SettingsTrap->bUseRandomScale)
+    {
+        FVector2D RangeScale{ SettingsTrap->RangeRandomScale};
+        double RScale{ FMath::RandRange(RangeScale.X,RangeScale.Y) };
+        SpawnTransform.SetScale3D(FVector{ RScale, RScale, RScale });
+    }
+
+    GetWorld()->SpawnActor<ABarrier>(SettingsTrap->Class_Trap_ForSpawn,      // Класс объекта для спавна
+        SpawnTransform,                         // Ротация
+        SpawnParams                            // Параметры
+    );
+
+    double Time{FMath::RandRange(Range_DelayBetweenTrap.X,Range_DelayBetweenTrap.Y)};
+
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle_LifeSpanExpired, this, &ASpawner::SpawnRandomTrap, Time, false);
 }
 
 bool ASpawner::CanBeSpawnHere(FVector Location, const FSpawnSettings& SpawnSettings, int Col)

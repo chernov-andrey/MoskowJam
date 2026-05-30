@@ -32,10 +32,10 @@ ASubmarine::ASubmarine()
 
 void ASubmarine::OnBeginOverlapp_SphereComponent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (auto InActor = Cast<ABarrier>(OtherActor))
+	if (Cast<ABarrier>(OtherActor) && OtherActor->IsA(Class_RAM.Get()))
 	{
-		DrawDebugString(GetWorld(), SweepResult.Location,"RAM", GetWorld()->GetFirstPlayerController(),FColor::Red,10.0f, false,5);
-	
+		Set_CurrentSpeed(0);
+		Change_HP(-Damage_RAM);	
 	}
 }
 
@@ -84,6 +84,12 @@ void ASubmarine::Set_CurrentRotation(FRotator New_Rotation)
 	ArrowComponent->SetWorldRotation(New_Rotation);
 	CurrentRotation = ArrowComponent->GetComponentRotation();
 	OnChangedCurrentRotationEvent.Broadcast(CurrentRotation);
+}
+
+void ASubmarine::Set_CurrentSpeed(float New_Speed)
+{
+	CurrentSpeed = New_Speed;
+	OnChangedCurrentSpeedEvent.Broadcast(CurrentSpeed);
 }
 
 

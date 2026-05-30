@@ -8,6 +8,7 @@
 
 class ABarrier;
 class UBoxComponent;
+
 USTRUCT(BlueprintType)
 struct FSpawnSettings
 {
@@ -62,6 +63,34 @@ struct FSpawnSettings
 
 };
 
+USTRUCT(BlueprintType)
+struct FSpawnSettingsTraps
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<ABarrier> Class_Trap_ForSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool  bUseRandomScale; // использовать ли рандомные маштаб 
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector2D  RangeRandomScale; // диапазон для рандомного скейла
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool  bUseRandomOffset; // использовать ли рандомную сдвиг спавна
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector  MinRandomOffsetSpawn; // 
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector  MaxRandomOffsetSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int WeightForSelect;
+};
+
 UCLASS()
 class MOSKOWJAM_API ASpawner : public AActor
 {
@@ -69,18 +98,13 @@ class MOSKOWJAM_API ASpawner : public AActor
 
 
 	
-private:
-	FRotator LastRotation;
-	TObjectPtr<ABarrier> PointForUpdateMap;
-
-	ABarrier* Spawn_PointForUpdate();
 
 public:	
 	// Sets default values for this actor's properties
 	ASpawner();
 
 protected:
-	
+	//-----------------------------------------------------------------------------------Dead Zone-----------------------------------------------------------------------------------------------
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Spawner | DeadZone")
 	TObjectPtr<UBoxComponent> DeadZone_BoxComponent;
 	
@@ -94,8 +118,8 @@ protected:
 	void OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	
+	//-----------------------------------------------------------------------------------Chanks-----------------------------------------------------------------------------------------------
 	// размер одного чанка
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner | SpawnSettings")
 	float SizeChank;
@@ -107,13 +131,30 @@ protected:
 	int CountCol = 3;
 	int CountRow = 3;
 
-
+	//------------------------------------------------------------------------------------Landscape-------------------------------------------------------------------------------------------
 
 	//список акторов и их параметры спавна в чанке
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner | SpawnSettings")
 	TArray<FSpawnSettings> List_SettingsForSpawn;
+	
+	//------------------------------------------------------------------------------------Traps------------------------------------------------------------------------------------------------
 
+	FTimerHandle Timer_SpawnTrap;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
+	FVector2D Range_DelayBetweenTrap;
+	
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
+	float Delay_Befor_FirstSpawn_Trap;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
+	TArray<FSpawnSettingsTraps> List_Settings_ForSpawnTrap;  // Список препядствий типпа Trap
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
+	TArray<int>Sequence_SpawnTrap; // порядок спавна (заспавнив по одному разу по порядку, начнет спавнить рандомно)
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 public:	
 	// Called every frame
@@ -123,8 +164,19 @@ public:
 
 	void StartedFilling();
 	
+	void SpawnRandomTrap();
+
 	bool TrySpawn(FVector Location,const FSpawnSettings &SpawnSettings, int Col, int Row) ;
 	bool CanBeSpawnHere(FVector Location, const FSpawnSettings& SpawnSettings, int Col);
 	FVector GetRandomLocationBefore_Submarine(int Col, int Row);
 	FRotator GetPseudoRandomRotation() { return LastRotation = LastRotation.Add(0,FMath::RandRange(100,170),0);};
+
+	TArray<int> GetArray_Weights_SpawnTrap();
+	int GetRandom_ArrayIndex_UseWeight(const TArray<int>& Weights);
+
+private:
+	FRotator LastRotation;
+	TObjectPtr<ABarrier> PointForUpdateMap;//объект который размещаем на растояние одного чанка от дедзоны что бы отслеживать когда прошли растояние равное размеру чанка
+
+	ABarrier* Spawn_PointForUpdate();//Спавним PointForUpdateMap на растояние одного чанка от дедзоны
 };
