@@ -17,8 +17,8 @@ FVector UMBFL_Submarine::GetLocationSubmarine(AActor* Actor)
 	}
 	else
 	{
-		return FVector{};
 		UE_LOG(LogTemp, Warning, TEXT("UMBFL_Submarine::GetLocationSubmarine(AActor* Actor): couldn't find it SUBMARINE "));
+		return FVector{};
 	}
 }
 
