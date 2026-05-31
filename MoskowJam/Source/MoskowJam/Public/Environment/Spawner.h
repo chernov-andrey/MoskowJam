@@ -19,18 +19,18 @@ struct FSpawnSettings
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float  Default_RadiusPersonalSpace; // радиус личного пространство, проверяет наличие таких же объектов в этом радиусе
+	float  Default_RadiusPersonalSpace{1.0}; // радиус личного пространство, проверяет наличие таких же объектов в этом радиусе
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<float>  List_RadiusPersonalSpace; // радиусы личного пространство, переопределения для рядов чанков
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool  bUseRandomScale; // использовать ли рандомные маштаб 
+	bool  bUseRandomScale{false}; // использовать ли рандомные маштаб 
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector2D  Default_RangeRandomScale; // диапазон для рандомного скейла
+	FVector2D  Default_RangeRandomScale{1.0,1.0}; // диапазон для рандомного скейла
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FVector2D>  List_RangeRandomScale; // диапазоны для рандомного скейла по колонкам чанков
@@ -38,25 +38,25 @@ struct FSpawnSettings
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool  bUseRandomHeight; // использовать ли рандомную высоту спавна
+	bool  bUseRandomHeight{ false }; // использовать ли рандомную высоту спавна
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector2D  Default_RangeHeightSpawn; // диапазон для рандомного высоты спавна
+	FVector2D  Default_RangeHeightSpawn{ 0.0,0.0 }; // диапазон для рандомного высоты спавна
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FVector2D>  List_RangeHeightSpawn; // диапазоны для рандомного высоты спавна колонкам чанков
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 Default_Max_CountInPersonalSpace;
+	int32 Default_Max_CountInPersonalSpace{0};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<int32> List_Max_CountInPersonalSpace;  // Максимальное количество в  колонкам чанков
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 Default_SpawnCountOnStart;  // количество попыток спавна при стартовом заполнение
+	int32 Default_SpawnCountOnStart{1};  // количество попыток спавна при стартовом заполнение
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<int32> List_SpawnCountOnStart;  // количество попыток спавна при стартовом заполнение по колонкам чанков
@@ -72,23 +72,23 @@ struct FSpawnSettingsTraps
 	TSubclassOf<ABarrier> Class_Trap_ForSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool  bUseRandomScale; // использовать ли рандомные маштаб 
+	bool  bUseRandomScale{ false }; // использовать ли рандомные маштаб 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector2D  RangeRandomScale; // диапазон для рандомного скейла
+	FVector2D  RangeRandomScale{ 1.0,1.0 }; // диапазон для рандомного скейла
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool  bUseRandomOffset; // использовать ли рандомную сдвиг спавна
+	bool  bUseRandomOffset{ false }; // использовать ли рандомную сдвиг спавна
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector  MinRandomOffsetSpawn; // 
+	FVector  MinRandomOffsetSpawn{1.0,1.0,1.0 }; // 
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector  MaxRandomOffsetSpawn;
+	FVector  MaxRandomOffsetSpawn{ 1.0,1.0,1.0 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int WeightForSelect;
+	int WeightForSelect{1};
 };
 
 UCLASS()

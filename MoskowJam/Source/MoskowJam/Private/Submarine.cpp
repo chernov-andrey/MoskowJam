@@ -6,8 +6,8 @@
 #include "Components/ArrowComponent.h"
 #include "Components\SphereComponent.h"
 #include "MoskowJam\MoskowJam_Directives.h"
-
 #include "Environment/Barrier.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 // Sets default values
 ASubmarine::ASubmarine()
@@ -26,16 +26,21 @@ ASubmarine::ASubmarine()
 
 	SphereComponent->SetCollisionObjectType(ECC_Vehicle);
 
-	CurrentHealthPoint = Get_Max_HP();
 	CurrentRotation = ArrowComponent->GetComponentRotation();
+
+	CurrentHealthPoint = Get_Max_HP();
 }
 
-void ASubmarine::OnBeginOverlapp_SphereComponent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASubmarine::OnHit_SphereComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (Cast<ABarrier>(OtherActor) && OtherActor->IsA(Class_RAM.Get()))
 	{
-		Set_CurrentSpeed(0);
-		Change_HP(-Damage_RAM);	
+		if (!bAccidentStatus)
+		{
+			Accident_Barrier = Cast<ABarrier>(OtherActor);
+			SetAccidentStatus(true);
+			FOnAccidentEvent.Broadcast(Accident_Barrier);
+		}
 	}
 }
 
@@ -43,8 +48,8 @@ void ASubmarine::OnBeginOverlapp_SphereComponent(UPrimitiveComponent* Overlapped
 void ASubmarine::BeginPlay()
 {
 	Super::BeginPlay();
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this,&ASubmarine::OnBeginOverlapp_SphereComponent);
-
+	SphereComponent->OnComponentHit.AddDynamic(this, &ASubmarine::OnHit_SphereComponent);
+	CurrentHealthPoint = Get_Max_HP();
 }
 
 // Called every frame
@@ -114,5 +119,22 @@ void ASubmarine::StopManeuver_Dodge()
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ManeuverDodge);
 	Set_CurrentRotation(FRotator{});
 	bPerformsManeuver = false;
+}
+
+void ASubmarine::SetAccidentStatus(bool NewVal)
+{
+	if (NewVal)
+	{
+		GetWorldTimerManager().SetTimer(TimerAccident, FTimerDelegate::CreateLambda([this]() {ASubmarine::SetAccidentStatus(false);}), DurationStatusAccident, false);
+		bAccidentStatus = true;
+		Change_HP(-Damage_RAM);
+		Set_CurrentSpeed(0);
+	}
+	else
+	{
+		FOnEndAccidentEvent.Broadcast(Accident_Barrier);
+		bAccidentStatus = false;
+		Accident_Barrier = nullptr;
+	}
 }
 

@@ -21,6 +21,8 @@ public:
 
 	//UPROPERTY(EditAnywhere,)
 	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TObjectPtr<UFloatingPawnMovement> PawnMovementComponent;
 
 
 protected:
@@ -30,8 +32,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TObjectPtr<UFloatingPawnMovement> PawnMovementComponent;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -48,4 +48,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	float Acceleration = 50000;
 };

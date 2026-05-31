@@ -26,8 +26,9 @@ class MOSKOWJAM_API ASubmarine : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASubmarine();
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangedCurrentFloatParam, float, NewHP);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangedCurrentFloatParam, float, NewVal);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangedCurrentRotation, FRotator, NewVector);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAccident, ABarrier*, CulpritAccident);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnChangedCurrentFloatParam OnChangedCurrentHPEvent;
@@ -40,9 +41,15 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<USphereComponent> SphereComponent;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnAccident FOnAccidentEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAccident FOnEndAccidentEvent;
 
 	UFUNCTION()
-	void OnBeginOverlapp_SphereComponent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnHit_SphereComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
@@ -87,6 +94,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
 	float  ElapsedTime_Dodge{0};
+	
+
+	//-------------------- accident
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Accident")
+	float  DurationStatusAccident;
+
+
+
 
 	FTimerHandle TimerHandle_ManeuverDodge;
 
@@ -105,7 +121,7 @@ public:
 	float Get_CurrentHP()const { return CurrentHealthPoint; };
 
 	UFUNCTION(BlueprintPure, Category = "Submarine")
-	float Get_Max_HP()const { return CurrentHealthPoint; };
+	float Get_Max_HP()const { return Max_HealthPoint; };
 
 	UFUNCTION(BlueprintPure, Category = "Submarine")
 	float Get_CurrentSpeed()const { return CurrentSpeed; };
@@ -138,9 +154,17 @@ public:
 
 	void StopManeuver_Dodge();
 
+
 	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	bool IsPerformsManeuver() { return bPerformsManeuver; };
 
+
+	bool GetAccidentStatus() { return bAccidentStatus; };
+	void SetAccidentStatus(bool NewVal);
 private:
 	bool bPerformsManeuver;
+	ABarrier* Accident_Barrier;
+	bool bAccidentStatus;
+
+	FTimerHandle TimerAccident;
 };

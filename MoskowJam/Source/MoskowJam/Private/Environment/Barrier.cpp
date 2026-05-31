@@ -25,6 +25,9 @@ ABarrier::ABarrier()
 // Called when the game starts or when spawned
 void ABarrier::BeginPlay()
 {
+	PawnMovementComponent->Acceleration = Acceleration;
+	PawnMovementComponent->Deceleration = Acceleration;
+
 	Super::BeginPlay();
 	if (UMBFL_Submarine::GetSubmarine(this)) 
 	{

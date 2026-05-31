@@ -194,7 +194,8 @@ void ASpawner::SpawnRandomTrap()
     const FVector& Max{ SettingsTrap->MaxRandomOffsetSpawn };
 
     FVector Location{ FMath::RandRange(Min.X,Max.X),FMath::RandRange(Min.Y,Max.Y),FMath::RandRange(Min.Z,Max.Z) };
-    
+    Location += FVector::ForwardVector * SizeChank * GenerationDepth_Chank;
+
     SpawnTransform.SetLocation(Location);
 
 
