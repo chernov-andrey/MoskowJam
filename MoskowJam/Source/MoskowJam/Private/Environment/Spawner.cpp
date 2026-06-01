@@ -42,7 +42,7 @@ void ASpawner::OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AA
             PointForUpdateMap = Spawn_PointForUpdate();
             for (int j{ 0 }; j < CountCol;j++)
             {
-                FillingChank(j, GenerationDepth_Chank);
+                FillingChank(j, GenerationDepth_Chank-1);
             }
         }
         
@@ -156,7 +156,7 @@ int ASpawner::GetRandom_ArrayIndex_UseWeight(const TArray<int>& Weights)
 
 void ASpawner::StartedFilling()
 { 
-    for (int i{ 0 }; i < GenerationDepth_Chank;i++)
+    for (int i{ -1 }; i < GenerationDepth_Chank;i++)
     {
         for (int j{ 0 }; j < CountCol;j++)
         {
@@ -169,20 +169,22 @@ void ASpawner::SpawnRandomTrap()
 {
     GetWorld()->GetTimerManager().ClearTimer(TimerHandle_LifeSpanExpired);
     
+ 
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;           // ”кажите владельца (опционально)
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-  
-    static int IterSpawn{0};
     
-    FSpawnSettingsTraps* SettingsTrap;
+    FSpawnSettingsTraps* SettingsTrap{nullptr};
     if (Sequence_SpawnTrap.IsValidIndex(IterSpawn))
     {
-        SettingsTrap = &List_Settings_ForSpawnTrap[IterSpawn];
+        if (List_Settings_ForSpawnTrap.IsValidIndex(Sequence_SpawnTrap[IterSpawn]))
+        {
+            SettingsTrap = &List_Settings_ForSpawnTrap[Sequence_SpawnTrap[IterSpawn]];
+        }
         IterSpawn++;
     }
-    else 
+    if(!SettingsTrap)
     {
         SettingsTrap = &List_Settings_ForSpawnTrap[GetRandom_ArrayIndex_UseWeight(GetArray_Weights_SpawnTrap())];
     }
@@ -250,8 +252,9 @@ bool ASpawner::TrySpawn(FVector Location,const FSpawnSettings& SpawnSettings, in
     {
         FVector VOffsetZ{ 0,0,1 };
         FVector2D Range{ SpawnSettings.List_RangeHeightSpawn.IsValidIndex(Col)? SpawnSettings.List_RangeHeightSpawn [Col]: SpawnSettings.Default_RangeHeightSpawn };
+        double Distance{ FMath::Abs(Location .Y)};
 
-        VOffsetZ *= FMath::RandRange(Range.X, Range.Y);
+        VOffsetZ *= (FMath::RandRange(Range.X, Range.Y) + Distance* SpawnSettings.DistanceFromCenterInfluence);
         Location += VOffsetZ;
     }
 

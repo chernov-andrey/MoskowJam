@@ -43,7 +43,10 @@ struct FSpawnSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector2D  Default_RangeHeightSpawn{ 0.0,0.0 }; // диапазон для рандомного высоты спавна
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float DistanceFromCenterInfluence{0};
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FVector2D>  List_RangeHeightSpawn; // диапазоны для рандомного высоты спавна колонкам чанков
 
@@ -175,6 +178,8 @@ public:
 	int GetRandom_ArrayIndex_UseWeight(const TArray<int>& Weights);
 
 private:
+
+	int IterSpawn{ 0 };
 	FRotator LastRotation;
 	TObjectPtr<ABarrier> PointForUpdateMap;//объект который размещаем на растояние одного чанка от дедзоны что бы отслеживать когда прошли растояние равное размеру чанка
 

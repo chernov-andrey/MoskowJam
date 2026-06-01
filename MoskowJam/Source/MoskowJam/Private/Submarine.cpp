@@ -4,7 +4,7 @@
 #include "Submarine.h"
 #include "Kismet\GameplayStatics.h"
 #include "Components/ArrowComponent.h"
-#include "Components\SphereComponent.h"
+#include "Components\BoxComponent.h"
 #include "MoskowJam\MoskowJam_Directives.h"
 #include "Environment/Barrier.h"
 #include "GameFramework/FloatingPawnMovement.h"
@@ -18,28 +18,31 @@ ASubmarine::ASubmarine()
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	check(ArrowComponent);
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	check(SphereComponent);
+	CorpusCollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CorpusCollisionComponent"));
+	check(CorpusCollisionComponent);
 
-	RootComponent = SphereComponent;
-	ArrowComponent->SetupAttachment(SphereComponent);
+	RootComponent = CorpusCollisionComponent;
+	ArrowComponent->SetupAttachment(CorpusCollisionComponent);
 
-	SphereComponent->SetCollisionObjectType(ECC_Vehicle);
+	CorpusCollisionComponent->SetCollisionObjectType(ECC_Vehicle);
 
 	CurrentRotation = ArrowComponent->GetComponentRotation();
 
 	CurrentHealthPoint = Get_Max_HP();
 }
 
-void ASubmarine::OnHit_SphereComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASubmarine::OnHit_CorpusComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (Cast<ABarrier>(OtherActor) && OtherActor->IsA(Class_RAM.Get()))
-	{
-		if (!bAccidentStatus)
+	for (const auto CRAM : Classes_RAM) {
+		if (Cast<ABarrier>(OtherActor) && OtherActor->IsA(CRAM.Get()))
 		{
-			Accident_Barrier = Cast<ABarrier>(OtherActor);
-			SetAccidentStatus(true);
-			FOnAccidentEvent.Broadcast(Accident_Barrier);
+			if (!bAccidentStatus)
+			{
+				Accident_Barrier = Cast<ABarrier>(OtherActor);
+				SetAccidentStatus(true);
+				FOnAccidentEvent.Broadcast(Accident_Barrier);
+			}
+			return;
 		}
 	}
 }
@@ -48,7 +51,7 @@ void ASubmarine::OnHit_SphereComponent(UPrimitiveComponent* HitComponent, AActor
 void ASubmarine::BeginPlay()
 {
 	Super::BeginPlay();
-	SphereComponent->OnComponentHit.AddDynamic(this, &ASubmarine::OnHit_SphereComponent);
+	CorpusCollisionComponent->OnComponentHit.AddDynamic(this, &ASubmarine::OnHit_CorpusComponent);
 	CurrentHealthPoint = Get_Max_HP();
 }
 

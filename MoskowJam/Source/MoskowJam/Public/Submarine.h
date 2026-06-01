@@ -7,7 +7,7 @@
 #include "Submarine.generated.h"
 
 class UArrowComponent;
-class USphereComponent;
+class UBoxComponent;
 class ABarrier;
 
 UENUM(BlueprintType)
@@ -40,7 +40,7 @@ public:
 	FOnChangedCurrentRotation OnChangedCurrentRotationEvent;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TObjectPtr<USphereComponent> SphereComponent;
+	TObjectPtr<UBoxComponent> CorpusCollisionComponent;
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnAccident FOnAccidentEvent;
@@ -49,7 +49,7 @@ public:
 	FOnAccident FOnEndAccidentEvent;
 
 	UFUNCTION()
-	void OnHit_SphereComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit_CorpusComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
@@ -74,7 +74,7 @@ protected:
 	
 	// RAM
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "Submarine")
-	TSubclassOf<ABarrier> Class_RAM;
+	TArray<TSubclassOf<ABarrier>> Classes_RAM;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine")
 	float Damage_RAM{10.f};
@@ -167,4 +167,6 @@ private:
 	bool bAccidentStatus;
 
 	FTimerHandle TimerAccident;
+
+	
 };
