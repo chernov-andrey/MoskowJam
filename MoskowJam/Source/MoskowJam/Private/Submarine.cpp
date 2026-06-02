@@ -59,7 +59,7 @@ void ASubmarine::BeginPlay()
 void ASubmarine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	TotalDistanceTraveled +=double( DeltaTime) * Get_CurrentSpeed();
 }
 
 void ASubmarine::Change_HP(float Delta_HP)
@@ -128,7 +128,6 @@ void ASubmarine::SetAccidentStatus(bool NewVal)
 {
 	if (NewVal)
 	{
-		GetWorldTimerManager().SetTimer(TimerAccident, FTimerDelegate::CreateLambda([this]() {ASubmarine::SetAccidentStatus(false);}), DurationStatusAccident, false);
 		bAccidentStatus = true;
 		Change_HP(-Damage_RAM);
 		Set_CurrentSpeed(0);

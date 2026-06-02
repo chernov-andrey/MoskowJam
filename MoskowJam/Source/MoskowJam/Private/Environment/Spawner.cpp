@@ -30,7 +30,7 @@ void ASpawner::BeginPlay()
 
 	Super::BeginPlay();
 	StartedFilling();
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle_LifeSpanExpired, this, &ASpawner::SpawnRandomTrap, Delay_Befor_FirstSpawn_Trap, false);
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle_LifeSpanExpired, this, &ASpawner::SpawnRandomTrap, Period_SpawnTrap, true);
 }
 
 void ASpawner::OnTriggered_DeadZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -87,6 +87,8 @@ ABarrier* ASpawner::Spawn_PointForUpdate()
 void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+ 
+
 
 }
 
@@ -167,55 +169,50 @@ void ASpawner::StartedFilling()
 
 void ASpawner::SpawnRandomTrap()
 {
-    GetWorld()->GetTimerManager().ClearTimer(TimerHandle_LifeSpanExpired);
-    
- 
-
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.Owner = this;           // Укажите владельца (опционально)
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    
-    FSpawnSettingsTraps* SettingsTrap{nullptr};
-    if (Sequence_SpawnTrap.IsValidIndex(IterSpawn))
+    if (UMBFL_Submarine::GetSubmarine(this)->Get_TotalDistanceTraveled() >= Distance_ForNextSpawn * IterSpawn)
     {
-        if (List_Settings_ForSpawnTrap.IsValidIndex(Sequence_SpawnTrap[IterSpawn]))
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;           // Укажите владельца (опционально)
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+        FSpawnSettingsTraps* SettingsTrap{ nullptr };
+        if (Sequence_SpawnTrap.IsValidIndex(IterSpawn))
         {
-            SettingsTrap = &List_Settings_ForSpawnTrap[Sequence_SpawnTrap[IterSpawn]];
+            if (List_Settings_ForSpawnTrap.IsValidIndex(Sequence_SpawnTrap[IterSpawn]))
+            {
+                SettingsTrap = &List_Settings_ForSpawnTrap[Sequence_SpawnTrap[IterSpawn]];
+            }
+            IterSpawn++;
         }
-        IterSpawn++;
-    }
-    if(!SettingsTrap)
-    {
-        SettingsTrap = &List_Settings_ForSpawnTrap[GetRandom_ArrayIndex_UseWeight(GetArray_Weights_SpawnTrap())];
-    }
-    
-    FTransform SpawnTransform;
-   // SpawnTransform.SetRotation(GetPseudoRandomRotation().Quaternion());
-   
-    const FVector& Min{ SettingsTrap->MinRandomOffsetSpawn };
-    const FVector& Max{ SettingsTrap->MaxRandomOffsetSpawn };
+        if (!SettingsTrap)
+        {
+            SettingsTrap = &List_Settings_ForSpawnTrap[GetRandom_ArrayIndex_UseWeight(GetArray_Weights_SpawnTrap())];
+        }
 
-    FVector Location{ FMath::RandRange(Min.X,Max.X),FMath::RandRange(Min.Y,Max.Y),FMath::RandRange(Min.Z,Max.Z) };
-    Location += FVector::ForwardVector * SizeChank * GenerationDepth_Chank;
+        FTransform SpawnTransform;
+        // SpawnTransform.SetRotation(GetPseudoRandomRotation().Quaternion());
 
-    SpawnTransform.SetLocation(Location);
+        const FVector& Min{ SettingsTrap->MinRandomOffsetSpawn };
+        const FVector& Max{ SettingsTrap->MaxRandomOffsetSpawn };
+
+        FVector Location{ FMath::RandRange(Min.X,Max.X),FMath::RandRange(Min.Y,Max.Y),FMath::RandRange(Min.Z,Max.Z) };
+        Location += UMBFL_Submarine::GetLocationSubmarine(this) + FVector::ForwardVector * SizeChank * GenerationDepth_Chank;
+
+        SpawnTransform.SetLocation(Location);
 
 
-    if (SettingsTrap->bUseRandomScale)
-    {
-        FVector2D RangeScale{ SettingsTrap->RangeRandomScale};
-        double RScale{ FMath::RandRange(RangeScale.X,RangeScale.Y) };
-        SpawnTransform.SetScale3D(FVector{ RScale, RScale, RScale });
-    }
+        if (SettingsTrap->bUseRandomScale)
+        {
+            FVector2D RangeScale{ SettingsTrap->RangeRandomScale };
+            double RScale{ FMath::RandRange(RangeScale.X,RangeScale.Y) };
+            SpawnTransform.SetScale3D(FVector{ RScale, RScale, RScale });
+        }
 
-    GetWorld()->SpawnActor<ABarrier>(SettingsTrap->Class_Trap_ForSpawn,      // Класс объекта для спавна
-        SpawnTransform,                         // Ротация
-        SpawnParams                            // Параметры
-    );
-
-    double Time{FMath::RandRange(Range_DelayBetweenTrap.X,Range_DelayBetweenTrap.Y)};
-
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle_LifeSpanExpired, this, &ASpawner::SpawnRandomTrap, Time, false);
+        GetWorld()->SpawnActor<ABarrier>(SettingsTrap->Class_Trap_ForSpawn,      // Класс объекта для спавна
+            SpawnTransform,                         // Ротация
+            SpawnParams                            // Параметры
+        );
+    }   
 }
 
 bool ASpawner::CanBeSpawnHere(FVector Location, const FSpawnSettings& SpawnSettings, int Col)

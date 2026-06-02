@@ -6,6 +6,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 
 
+
 // Sets default values
 ABarrier::ABarrier()
 {
@@ -16,10 +17,17 @@ ABarrier::ABarrier()
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	check(StaticMeshComponent);
+
 	RootComponent = StaticMeshComponent;
 
 	PawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("PawnMovementComponent"));
 	check(PawnMovementComponent);
+}
+
+void ABarrier::SetAdditionalSpeed(float NewVal)
+{
+	AdditionalSpeed = NewVal;
+	UpdateSummarySpeed();
 }
 
 // Called when the game starts or when spawned
@@ -33,7 +41,7 @@ void ABarrier::BeginPlay()
 	{
 		UMBFL_Submarine::GetSubmarine(this)->OnChangedCurrentSpeedEvent.AddDynamic(this, &ABarrier::UpdateSpeed);
 		UMBFL_Submarine::GetSubmarine(this)->OnChangedCurrentRotationEvent.AddDynamic(this, &ABarrier::UpdateDirection);
-		PawnMovementComponent->MaxSpeed = UMBFL_Submarine::GetSubmarine(this)->Get_CurrentSpeed();
+		UpdateSpeed( UMBFL_Submarine::GetSubmarine(this)->Get_CurrentSpeed());
 		MoveDirection = -UMBFL_Submarine::GetSubmarine(this)->Get_CurrentRotation().Vector();
 	}
 }
@@ -42,8 +50,14 @@ void ABarrier::UpdateSpeed(float NewSpeed)
 {
 	if (PawnMovementComponent)
 	{
-		PawnMovementComponent->MaxSpeed = NewSpeed;
+		LevelSpeed =  NewSpeed;
 	}
+	UpdateSummarySpeed();
+}
+
+void ABarrier::UpdateSummarySpeed()
+{
+	PawnMovementComponent->MaxSpeed = LevelSpeed + AdditionalSpeed;
 }
 
 void ABarrier::UpdateDirection(FRotator NewDir)
@@ -55,7 +69,7 @@ void ABarrier::UpdateDirection(FRotator NewDir)
 void ABarrier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AddMovementInput(MoveDirection,1);
+	AddMovementInput(MoveDirection* WorldSpeedMultiplier + AdditionalMoveDirection+ AdditionalMoveDirectionCorrect, 1);
 }
 
 // Called to bind functionality to input

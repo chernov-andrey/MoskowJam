@@ -95,11 +95,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
 	float  ElapsedTime_Dodge{0};
 	
-
-	//-------------------- accident
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Accident")
-	float  DurationStatusAccident;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Statistic")
+	double  TotalDistanceTraveled{ 0 };
 
 
 
@@ -129,7 +126,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Submarine")
 	FRotator Get_CurrentRotation()const { return CurrentRotation; };
 
-	
+	UFUNCTION(BlueprintPure, Category = "Submarine")
+	float Get_TotalDistanceTraveled()const { return TotalDistanceTraveled; };
+
 	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	void Change_HP(float Delta_HP);
 	
@@ -158,15 +157,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	bool IsPerformsManeuver() { return bPerformsManeuver; };
 
-
+	UFUNCTION(BlueprintCallable, Category = "Submarine")
 	bool GetAccidentStatus() { return bAccidentStatus; };
+	
+	UFUNCTION(BlueprintCallable)
 	void SetAccidentStatus(bool NewVal);
+
+
 private:
 	bool bPerformsManeuver;
 	ABarrier* Accident_Barrier;
-	bool bAccidentStatus;
-
-	FTimerHandle TimerAccident;
-
-	
+	bool bAccidentStatus;	
 };

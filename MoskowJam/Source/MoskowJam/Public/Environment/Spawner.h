@@ -145,10 +145,10 @@ protected:
 	FTimerHandle Timer_SpawnTrap;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
-	FVector2D Range_DelayBetweenTrap;
+	float Period_SpawnTrap{10};
 	
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
-	float Delay_Befor_FirstSpawn_Trap;
+	float Distance_ForNextSpawn;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawner | SpawnTrapSettings")
 	TArray<FSpawnSettingsTraps> List_Settings_ForSpawnTrap;  // Список препядствий типпа Trap
