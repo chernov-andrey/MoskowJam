@@ -98,13 +98,17 @@ UCLASS()
 class MOSKOWJAM_API ASpawner : public AActor
 {
 	GENERATED_BODY()
-
-
+	
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpawnTrap,int,CounterTrap);
 	
 
 public:	
 	// Sets default values for this actor's properties
 	ASpawner();
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnSpawnTrap OnSpawnTrapEvent;
 
 protected:
 	//-----------------------------------------------------------------------------------Dead Zone-----------------------------------------------------------------------------------------------

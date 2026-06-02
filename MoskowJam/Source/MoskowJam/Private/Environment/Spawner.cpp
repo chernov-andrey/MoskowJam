@@ -212,6 +212,7 @@ void ASpawner::SpawnRandomTrap()
             SpawnTransform,                         // Ротация
             SpawnParams                            // Параметры
         );
+        OnSpawnTrapEvent.Broadcast(IterSpawn);
     }   
 }
 
