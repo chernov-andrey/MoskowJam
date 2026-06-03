@@ -100,7 +100,7 @@ class MOSKOWJAM_API ASpawner : public AActor
 	GENERATED_BODY()
 	
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpawnTrap,int,CounterTrap);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSpawnTrap,int,CounterTrap,ABarrier*, Traps);
 	
 
 public:	

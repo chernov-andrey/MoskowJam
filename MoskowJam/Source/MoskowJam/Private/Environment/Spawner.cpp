@@ -208,11 +208,11 @@ void ASpawner::SpawnRandomTrap()
             SpawnTransform.SetScale3D(FVector{ RScale, RScale, RScale });
         }
 
-        GetWorld()->SpawnActor<ABarrier>(SettingsTrap->Class_Trap_ForSpawn,      // Класс объекта для спавна
+       ABarrier* NewTrap = GetWorld()->SpawnActor<ABarrier>(SettingsTrap->Class_Trap_ForSpawn,      // Класс объекта для спавна
             SpawnTransform,                         // Ротация
             SpawnParams                            // Параметры
         );
-        OnSpawnTrapEvent.Broadcast(IterSpawn);
+        OnSpawnTrapEvent.Broadcast(IterSpawn, NewTrap);
     }   
 }
 
