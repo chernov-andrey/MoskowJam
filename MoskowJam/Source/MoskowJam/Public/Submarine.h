@@ -86,14 +86,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
 	float  Duration_Dodge;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
-	float  TimeRate_Dodge;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
 	float  MaxAngleRotation_Dodge;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Dodge")
-	float  ElapsedTime_Dodge{0};
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Submarine | Statistic")
 	double  TotalDistanceTraveled{ 0 };

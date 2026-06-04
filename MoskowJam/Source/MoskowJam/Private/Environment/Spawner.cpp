@@ -182,8 +182,8 @@ void ASpawner::SpawnRandomTrap()
             {
                 SettingsTrap = &List_Settings_ForSpawnTrap[Sequence_SpawnTrap[IterSpawn]];
             }
-            IterSpawn++;
         }
+            IterSpawn++;
         if (!SettingsTrap)
         {
             SettingsTrap = &List_Settings_ForSpawnTrap[GetRandom_ArrayIndex_UseWeight(GetArray_Weights_SpawnTrap())];
@@ -196,7 +196,7 @@ void ASpawner::SpawnRandomTrap()
         const FVector& Max{ SettingsTrap->MaxRandomOffsetSpawn };
 
         FVector Location{ FMath::RandRange(Min.X,Max.X),FMath::RandRange(Min.Y,Max.Y),FMath::RandRange(Min.Z,Max.Z) };
-        Location += UMBFL_Submarine::GetLocationSubmarine(this) + FVector::ForwardVector * SizeChank * GenerationDepth_Chank;
+        Location += UMBFL_Submarine::GetLocationSubmarine(this) + FVector::ForwardVector * SizeChank * Depth_SpawnTrap;
 
         SpawnTransform.SetLocation(Location);
 
