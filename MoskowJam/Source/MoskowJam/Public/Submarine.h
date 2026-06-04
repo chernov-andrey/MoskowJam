@@ -43,10 +43,10 @@ public:
 	TObjectPtr<UBoxComponent> CorpusCollisionComponent;
 	
 	UPROPERTY(BlueprintAssignable)
-	FOnAccident FOnAccidentEvent;
+	FOnAccident OnAccidentEvent;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnAccident FOnEndAccidentEvent;
+	FOnAccident OnEndAccidentEvent;
 
 	UFUNCTION()
 	void OnHit_CorpusComponent(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
