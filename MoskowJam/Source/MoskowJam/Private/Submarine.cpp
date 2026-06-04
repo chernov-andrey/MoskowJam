@@ -40,7 +40,7 @@ void ASubmarine::OnHit_CorpusComponent(UPrimitiveComponent* HitComponent, AActor
 			{
 				Accident_Barrier = Cast<ABarrier>(OtherActor);
 				SetAccidentStatus(true);
-				FOnAccidentEvent.Broadcast(Accident_Barrier);
+				OnAccidentEvent.Broadcast(Accident_Barrier);
 			}
 			return;
 		}
@@ -134,7 +134,7 @@ void ASubmarine::SetAccidentStatus(bool NewVal)
 	}
 	else
 	{
-		FOnEndAccidentEvent.Broadcast(Accident_Barrier);
+		OnEndAccidentEvent.Broadcast(Accident_Barrier);
 		bAccidentStatus = false;
 		Accident_Barrier = nullptr;
 	}
